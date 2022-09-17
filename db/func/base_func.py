@@ -1,7 +1,8 @@
-from typing import TypeVar, Type, Optional, Dict
+from typing import TypeVar, Type, Dict
 from sqlalchemy import select, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.base import Base
+from db.models import User
 
 
 ModelType = TypeVar("ModelType", bound=Base)

@@ -1,28 +1,34 @@
 from sqlalchemy.sql import func
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Boolean
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Boolean, PickleType
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.mutable import MutableDict
 from .base import Base
+from config import settings
 
 
 class Team(Base):
     __tablename__ = 'teams'
-    name = Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    points = Column(Integer, default=0)
+    invitation_code = Column(String, unique=True)
 
     def __repr__(self):
-        return 'Team_' + self.name
+        return 'Team_' + self.name + '_' + self.invitation_code
 
 
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column(String, index=True, autoincrement=True)
-    link = Column(String)
-    login = Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    vk_ref = Column(String)
+    login = Column(String, unique=True)
     password = Column(String)
-    name = Column(String)
-    surname = Column(String)
+    first_name = Column(String)
+    last_name = Column(String)
     group = Column(String)
-    team_name = Column(String, nullable=True)
+    team_id = Column(Integer, nullable=True)
+    captain = Column(Boolean, default=False)
 
     def __repr__(self):
         return 'User_' + self.surname + '_' + self.name

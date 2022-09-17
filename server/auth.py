@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
-from fastapi import HTTPException, Security
+from fastapi import HTTPException, Security, Depends
+from fastapi.responses import RedirectResponse
 from fastapi.security import HTTPAuthorizationCredentials, APIKeyCookie
 import jwt
+from db import async_session, users_table
 from config import settings
 
 
@@ -30,9 +32,14 @@ class Auth:
                 return payload['sub']
             raise HTTPException(status_code=401, detail='Scope for the token is invalid')
         except jwt.ExpiredSignatureError:
-            raise HTTPException(status_code=401, detail='Token expired')
+            raise HTTPException(status_code=401, detail='Войдите в аккаунт снова.')
         except jwt.InvalidTokenError:
-            raise HTTPException(status_code=401, detail='Invalid token')
+            raise HTTPException(status_code=401, detail='Вы не авторизировались!')
 
-    def cookie_wrapper(self, auth: HTTPAuthorizationCredentials = Security(api_key_cookie)):
-        return self.decode_token(auth)
+    async def cookie_wrapper(self, auth: HTTPAuthorizationCredentials = Security(api_key_cookie)):
+        res = self.decode_token(auth)
+        async with async_session() as db:
+            user = await users_table.check_user_by_token(session=db, token=auth)
+        if not user:
+            raise HTTPException(status_code=401, detail='Авторизируйтесь заново!')
+        return res

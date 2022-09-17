@@ -14,20 +14,15 @@ class LoginDetails(BaseModel):
 
 
 class SignUpDetails(LoginDetails):
-    name: str = Field(..., min_length=1, regex=r'[А-Яа-я]{1,}')
-    surname: str = Field(..., min_length=1, regex=r'[А-Яа-я]{1,}')
-    link: str = Field(..., regex=r'[A-Za-z0-9]+')
+    first_name: str = Field(..., min_length=1, regex=r'[А-Яа-я ]{1,}')
+    last_name: str = Field(..., min_length=1, regex=r'[А-Яа-я ]{1,}')
+    vk_ref: str = Field(..., regex=r'[A-Za-z0-9]+')
     group: str = Field(..., regex=r'[А-Яа-я]+[0-9]{1,2}[А-Яа-я]?-1[0-9]?[Б]?')
 
 
-class AuthedCookie(Request):
-    pass
-#     async def check_cookie(self, auth: HTTPAuthorizationCredentials = Security(security)):
-#         try:
-#             temp_login = auth.decode_token(self.cookies['access_token'])
-#             async with async_session() as db:
-#                 if await users_table.check_user(session=db, login=temp_login):
-#                     return '<Страница>, доступная вам'
-#         except KeyError:
-#             pass
-#         return HTTPException(status_code=401, detail='Вы не авторизировались')
+class NameOfTeam(BaseModel):
+    name: str = Field(..., min_length=1, max_length=21)
+
+
+class InvitationCode(BaseModel):
+    code: str = Field(..., regex=r'22[A-Za-z]{4}LB')
