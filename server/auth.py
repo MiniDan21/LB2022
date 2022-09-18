@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from fastapi import HTTPException, Security, Depends
+from fastapi import HTTPException, Security
 from fastapi.responses import RedirectResponse
 from fastapi.security import HTTPAuthorizationCredentials, APIKeyCookie
 import jwt

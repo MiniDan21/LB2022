@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends, Response, Request
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import IntegrityError
 from db import async_engine, async_session, Base, users_table, teams_table, User, Team
 from server.auth import Auth
@@ -14,6 +15,20 @@ async def create_tables(drop: bool = False):
 
 app = FastAPI()
 auth = Auth()
+
+origins = [
+    'http://localhost',
+    'http://localhost:8080',
+    'https://local.legends.batalichev.pro:8080'
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*']
+)
 
 
 @app.on_event('startup')
