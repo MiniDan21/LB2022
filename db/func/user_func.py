@@ -2,12 +2,19 @@ from .base_func import *
 
 
 class UsersTable(BaseFunc):
+    async def check_id(self, session: AsyncSession, id: int):
+        res = await session.execute(
+            select(self.model).where(self.model.id == id)
+        )
+        res = res.scalar()
+        return res
+
     async def check_login(self, session: AsyncSession, login: str):
         res = await session.execute(
             select(self.model).where(self.model.login == login)
         )
         res = res.scalar()
-        return res if res else False
+        return res
 
     async def check_login_and_password(self, session: AsyncSession, login: str, password: str):
         temp_row = await session.execute(
@@ -25,29 +32,34 @@ class UsersTable(BaseFunc):
         )
         await session.commit()
 
-    async def make_captain(self, session: AsyncSession, token: str):
-        await session.execute(
-            update(self.model).where(self.model.token == token).values(captain=True)
-        )
+    async def make_captain(self, session: AsyncSession, login: str, demotion: bool = False):
+        if demotion:
+            await session.execute(
+                update(self.model).where(self.model.login == login).value(captain=False)
+            )
+        else:
+            await session.execute(
+                update(self.model).where(self.model.login == login).values(captain=True)
+            )
         await session.commit()
 
     async def delete_user_from_team(self, session: AsyncSession, login: str):
         await session.execute(
-            update(self.model).where(self.model.login == login).values(team_name=None)
+            update(self.model).where(self.model.login == login).values(team_id=None)
         )
         await session.commit()
 
-    async def delete_cookie(self, session: AsyncSession, token: str):
-        await session.execute(
-            update(self.model).where(self.model.token == token).values(token='')
-        )
-        await session.commit()
-
-    async def set_team_by_token(self, session: AsyncSession, token: str, team_name: str):
-        login = auth.decode_token(token)
+    async def set_team_by_login(self, session: AsyncSession, login: str, team_id: int):
         res = await session.execute(
-            update(self.model).where(self.model.login == login).values(team_name=team_name)
+            update(self.model).where(self.model.login == login).values(team_id=team_id)
         )
         await session.commit()
         res = res.scalar()
+        return res
+
+    async def get_all_members(self, session: AsyncSession, team_id: int):
+        res = await session.execute(
+            select(self.model).where(self.model.team_id == team_id)
+        )
+        res.fetchall()
         return res

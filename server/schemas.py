@@ -17,7 +17,7 @@ class SignUpDetails(LoginDetails):
     first_name: str = Field(..., min_length=1, regex=r'[А-Яа-я ]{1,}')
     last_name: str = Field(..., min_length=1, regex=r'[А-Яа-я ]{1,}')
     vk_ref: str = Field(..., regex=r'[A-Za-z0-9]+')
-    group: str = Field(..., regex=r'[А-Яа-я]+[0-9]{1,2}[А-Яа-я]?-1[0-9]?[Б]?')
+    group_number: str = Field(..., regex=r"^([А-Яа-я]+)\d{1,2}([ЦцИи])?-(1[1-9])(Б|б|БВ|бв|Бв|бВ)?\s*$")
 
 
 class NameOfTeam(BaseModel):
@@ -26,3 +26,7 @@ class NameOfTeam(BaseModel):
 
 class InvitationCode(BaseModel):
     code: str = Field(..., regex=r'22[A-Za-z]{4}LB')
+
+
+class UserId(BaseModel):
+    user_id: int = Field(...)
