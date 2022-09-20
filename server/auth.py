@@ -11,7 +11,7 @@ from config import settings
 
 def token_required(f):
     @wraps(f)
-    def _verify(request: Request):
+    def _verify(request: Request, *args, **kwargs):
         auth_headers = request.headers.get('Authorization', '').split()
         invalid_msg = {
             'message': 'Invalid token. Registration and / or authentication required',
@@ -28,7 +28,7 @@ def token_required(f):
         try:
             token = auth_headers[1]
             data = jwt.decode(token, settings.FastApi_secret, 'HS256')
-            return f(request)
+            return f(request, *args, **kwargs)
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=401, detail=expired_msg)  # 401 is Unauthorized HTTP status code
         except (jwt.InvalidTokenError, Exception) as e:

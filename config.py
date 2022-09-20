@@ -1,4 +1,4 @@
-from random import randint
+from random import choice
 from pydantic import BaseSettings
 
 
@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     @property
     def invitation_code(self):
-        char = lambda: chr(randint(65, 123))
+        char = lambda: chr(choice([i for i in range(65, 91)] + [j for j in range(97, 123)]))
         return '22' + char() + char() + char() + char() + 'LB'
 
     class Config:

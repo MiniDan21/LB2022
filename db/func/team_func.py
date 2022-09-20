@@ -1,3 +1,5 @@
+import logging
+
 from .base_func import *
 
 
@@ -23,16 +25,15 @@ class TeamsTable(BaseFunc):
         res = res.scalar()
         return res
 
-    async def add_member(self, session: AsyncSession, team_id: int):
-        # Протестировать, иначе создать отдельную переменную с вытащенным из бд количеством участников
+    async def change_amount(self, session: AsyncSession, team_id: int, current_amount: int):
         await session.execute(
-            update(self.model).where(self.model.id == team_id).values(amount_of_members=self.model.amount_of_members + 1)
+            update(self.model).where(self.model.id == team_id).values(amount_of_members=current_amount)
         )
         await session.commit()
 
-    async def del_member(self, session: AsyncSession, team_id: int):
-        # Протестировать, иначе создать отдельную переменную с вытащенным из бд количеством участников
+    async def del_team(self, session: AsyncSession, team_id: int):
+        expr = delete(self.model).where(self.model.id == team_id)
         await session.execute(
-            update(self.model).where(self.model.id == team_id).values(amount_of_members=self.model.amount_of_members - 1)
+            expr
         )
         await session.commit()

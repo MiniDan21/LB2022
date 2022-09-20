@@ -19,6 +19,16 @@ class Team(Base):
     def __repr__(self):
         return 'Team_' + self.name + '_' + self.invitation_code
 
+    # @property
+    # def data(self):
+    #     return {
+    #         'id': self.id,
+    #         'name': self.name,
+    #         'amount_of_members': self.amount_of_members,
+    #         'points': self.points,
+    #         'invatation_code': self.invitation_code
+    #     }
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -35,3 +45,15 @@ class User(Base):
 
     def __repr__(self):
         return 'User_' + self.surname + '_' + self.name + '_' + self.team_id
+
+    @property
+    def data(self):
+        return {
+            'id': self.id,
+            'vk_ref': self.vk_ref,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'group_number': self.group_number,
+            'team_id': self.team_id,
+            'captain': self.captain
+        }

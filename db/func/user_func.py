@@ -18,7 +18,7 @@ class UsersTable(BaseFunc):
 
     async def check_login_and_password(self, session: AsyncSession, login: str, password: str):
         temp_row = await session.execute(
-            select(self.model).where(self.model.password == password and self.model.login == login)
+            select(self.model).where(self.model.login == login)
         )
         temp_row = temp_row.scalar()
         if temp_row:
@@ -35,7 +35,7 @@ class UsersTable(BaseFunc):
     async def make_captain(self, session: AsyncSession, login: str, demotion: bool = False):
         if demotion:
             await session.execute(
-                update(self.model).where(self.model.login == login).value(captain=False)
+                update(self.model).where(self.model.login == login).values(captain=False)
             )
         else:
             await session.execute(
@@ -54,12 +54,10 @@ class UsersTable(BaseFunc):
             update(self.model).where(self.model.login == login).values(team_id=team_id)
         )
         await session.commit()
-        res = res.scalar()
-        return res
 
     async def get_all_members(self, session: AsyncSession, team_id: int):
         res = await session.execute(
             select(self.model).where(self.model.team_id == team_id)
         )
-        res.fetchall()
+        res = res.fetchall()
         return res
