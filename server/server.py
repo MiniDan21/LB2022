@@ -2,9 +2,9 @@ import logging
 from fastapi import FastAPI, HTTPException, Depends, Response, Cookie, Header, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware import Middleware
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.exc import IntegrityError
 from db import async_engine, async_session, Base, users_table, teams_table, User, Team
 from server.auth import Auth, token_required
 from server.schemas import SignUpDetails, LoginDetails, NameOfTeam, InvitationCode, UserId
@@ -17,24 +17,27 @@ async def create_tables(drop: bool = False):
             await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
-
 app = FastAPI()
-auth = Auth()
-
 origins = [
-    'https://localhost',
-    'https://localhost:8080',
-    'https://local.legends.batalichev.pro:8080',
-    'https://bauman2022.netlify.app'
+    "https://bauman2022.netlify.app/",
+    "https://localhost",
+    "https://localhost:8080",
+    "https://local.legends.batalichev.pro:8080",
+    "https://legends.bmstu.ru",
 ]
 
+# "https://legends.bmstu.ru"
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=['*'],
-    allow_headers=['*']
+    allow_headers=['*'],
 )
+
+
+auth = Auth()
+logging.basicConfig(level='DEBUG')
 
 
 def return_login(header: Header):
@@ -137,10 +140,12 @@ async def sign_in(request: LoginDetails):
 @token_required
 @app.get('/api/user/info', status_code=200)
 async def user_info(request: Request):
+    logging.basicConfig(filename='test.log')
+    logging.warning(request.headers)
     async with async_session() as db:
         user = await users_table.check_login(session=db, login=return_login(request.headers))
     if user:
-        return user['User'].data
+        return user.data
     raise HTTPException(status_code=400, detail='Пользователь не найден!')
 
 
