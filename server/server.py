@@ -120,6 +120,9 @@ async def sign_up(request: SignUpDetails):
         details = request.dict()
         token = auth.encode_token(request.login)
         user = User(**details)
+        vk_ref = str(user.vk_ref).replace('https://vk.com/', '')
+        vk_ref = vk_ref.replace('@', '')
+        user.vk_ref = vk_ref
         if await users_table.check_login(session=db, login=user.login):
             raise HTTPException(status_code=400, detail='Такой логин уже занят!')
         await users_table.create(session=db, obj_model=user)

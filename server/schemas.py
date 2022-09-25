@@ -26,7 +26,7 @@ class LoginDetails(BaseModel):
 class SignUpDetails(LoginDetails):
     first_name: str = Field(..., min_length=1, max_length=20, regex=r'^[А-Яа-я ]{1,30}$')
     last_name: str = Field(..., min_length=1, max_length=20, regex=r'^[А-Яа-я ]{1,30}$')
-    group_number: str = Field(..., regex=r"^([А-Яа-я]+)\d{1,2}([ЦцИи])?-(1[1-9])(Б|б|БВ|бв|Бв|бВ)?\s*$")
+    group_number: str = Field(..., regex=r"^([А-Яа-я]+)\d{0,2}([ЦцИи])?-(1[1-9])(Б|б|БВ|бв|Бв|бВ)?\s*$")
     vk_ref: str = Field(..., min_length=1, max_length=40, regex=r'^(https://vk.com/)?[A-Za-z0-9_.]+$')
 
 
